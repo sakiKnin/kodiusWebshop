@@ -7,6 +7,7 @@ import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 const App = () => {
 	const [products, setProducts] = useState([])
 	const [cart, setCart] = useState({})
+	const [promotion, setPromotion] = useState([]);
 	
 	const fetchProducts = async () => {
 		const { data } = await commerce.products.list()
@@ -42,11 +43,11 @@ const App = () => {
 		setCart(cart)
 	}
 
-	const handlePromotion = async (cart) => {
-		//const {car} = await commerce.discounts()
-		console.log(cart)
-		
-		setCart(cart)
+	const handlePromotion = (prom) => {
+
+		console.log("seted promotion:", prom)
+		console.log(prom.length)
+		setPromotion(prom)
 	}
 
 	useEffect(() => {
@@ -67,7 +68,7 @@ const App = () => {
 						<Products products={products} onAddToCart={handleAddToCart} />
 					</Route>
 					<Route path="/checkout" exact>
-						<Checkout cart={cart} />
+						<Checkout cart={cart} promotion={promotion}/>
 					</Route>
 					<Route exact="/cart">
 						<Cart 
@@ -75,7 +76,7 @@ const App = () => {
 						handleUpdateCartQty = {handleUpdateCartQty}			  		    					handleRemoveFromCart = {handleRemoveFromCart}
 						handleEmptyCart = {handleEmptyCart}
 						/>
-						<Promotions cart={cart} handlePromotion={handlePromotion}/>
+						<Promotions cart={cart} handlePromotion={handlePromotion} promotion={promotion}/>
 					</Route>
 					
 				</Switch>

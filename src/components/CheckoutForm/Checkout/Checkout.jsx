@@ -9,9 +9,11 @@ import PaymentForm from '../PaymentForm'
 
 const steps = ['Shipping address', 'Payment details' ]
 
-const Checkout = ({ cart }) => {
+const Checkout = ({ cart, promotion }) => {
 	const [activeStep, setActiveStep] = useState(0)
 	const [checkoutToken, setCheckoutToken] = useState(null)
+	const [shippingData, setShippingData] = useState({})
+	const [res, setRes]=useState({})
 	const classes = useStyles();
 
 	useEffect(()=>{
@@ -26,6 +28,47 @@ const Checkout = ({ cart }) => {
 			generateToken()
 		}, [cart])
 
+	 
+
+	let retrieve = async () => {
+			let retrieveToken = await commerce.checkout.getToken(checkoutToken.id)
+			setCheckoutToken(retrieveToken)
+
+			}
+		 
+
+	let discount = async (discountCode) => {
+			console.log(discountCode)
+			const response = await commerce.checkout.checkDiscount(checkoutToken.id, {code: discountCode})
+			setRes(response)
+			}
+	 
+	const nextStep = () => setActiveStep((prevActiveStep) => prevActiveStep + 1)
+	const backStep = () => setActiveStep((prevActiveStep) => prevActiveStep - 1)
+
+	const next = (data) => {
+		setShippingData(data)
+		if(promotion==="20off") discount(promotion)
+		 
+		let x=false
+		let y=false		
+		for(let item of checkoutToken.live.line_items){
+			if (item.name==="Motion Sensor" && item.quantity==3) x=true
+			if (item.name==="Smoke Sensor" && item.quantity==2) y=true
+			}
+		 
+		if(x && !y) discount("motiondiscount")
+		else if(!x && y) discount("smokediscount")
+		else if(x && y) discount("motionsmokediscount")
+		 
+		if(res){
+			retrieve() 
+			nextStep()
+		}
+		
+		
+	}
+
 	const Confirmation = () => (
 		<div>
 			Confirmation
@@ -33,8 +76,8 @@ const Checkout = ({ cart }) => {
 	)
 	
 	const Form = () => (activeStep === 0 
-		? <AddressForm checkoutToken={checkoutToken} /> 
-		: <PaymentForm checkoutToken={checkoutToken} />)
+		? <AddressForm checkoutToken={checkoutToken} next={next}/> 
+		: <PaymentForm shippingData={shippingData} checkoutToken={checkoutToken} backStep={backStep}/>)
 	
 	return(
 		<>
@@ -51,6 +94,7 @@ const Checkout = ({ cart }) => {
 					</Stepper>
 					{activeStep===steps.length ? <Confirmation /> : checkoutToken && <Form />}
 				</Paper>
+			<br />
 			</main>	  
 
 

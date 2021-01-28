@@ -1,64 +1,54 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 
 import { Card, CardMedia, CardContent, CardActions, Typography, IconButton } from '@material-ui/core'
-
+ 
 import useStyles from './styles'
 
-const Promotions = ({cart, handlePromotion}) => {
+const Promotions = ({cart, handlePromotion, promotion}) => {
 
 	const classes =useStyles()
 
-	const [flag, setFlag] = useState(false)
-	const [flag2, setFlag2] = useState(false)
-	const [flag3, setFlag3] = useState(false)
-
-	const setProm1 = () => {
-		setFlag(true)
-		setFlag2(false)
-		setFlag3(false)
-		cart.discount_code="20off"
-		console.log(cart)
-		handlePromotion(cart)
+	let setProm1 = () => {
+		 
+		handlePromotion(["20off"])
 		}
 
 	const removeProm1 = () => {
-		setFlag(false)
-		cart.dicount_code=""
-		handlePromotion(cart)
+		 
+		handlePromotion([])
 		
 	}
 
 	const setProm2 = () => {
-		setFlag(false)
-		setFlag2(true)
-		cart.discount_code+="5off"
-		console.log(cart)
-		handlePromotion(cart)
+		
+		if(promotion.length) promotion=["20euroff", "5off"]
+		else promotion=["5off"]
+		handlePromotion(promotion)
 
 	}
 
 	const removeProm2 = () => {
-		setFlag2(false)
-		cart.discount_code=""
-		console.log(cart)
-		handlePromotion(cart)
+		if(promotion.length==2){ 
+			promotion=[]
+			promotion[0]="20euroff"
+		}else promotion=[]
+		handlePromotion(promotion)
 
 	}
 
 	const setProm3 = () => {
-		setFlag(false)
-		setFlag3(true)
-		cart.discount_code+="20euroff"
-		console.log(cart)
-		handlePromotion(cart)
+		if(promotion.length) promotion=["5off","20euroff"]
+		else promotion=["20euroff"]
+		handlePromotion(promotion)
 
 	}
 
 	const removeProm3 = () => {
-		setFlag3(false)
-		cart.discount_code=""
-		console.log(cart)
-		handlePromotion(cart)
+		if(promotion.length==2){
+			promotion=[]
+			promotion[0]="5off"
+		}else promotion=[]
+		handlePromotion(promotion)
 
 		}
 
@@ -71,9 +61,9 @@ const Promotions = ({cart, handlePromotion}) => {
 			<CardContent>
 			<Typography variant="h5" gutterBottom>20%OFF, cannot be used in conjunction with other codes</Typography>
 			</CardContent>
-			{ !flag2 && !flag3 && (
+			{  (!promotion.length || promotion.length==1 && promotion[0]=="20off") && (
 			<CardActions className={classes.cardActions}>
-				{ !flag ? (
+				{ !promotion.length ? (
 				<IconButton aria-label="Add to Cart" color="primary" onClick={()=>{setProm1()}}>
 					 add 20%OFF code
 				</IconButton>):
@@ -91,9 +81,9 @@ const Promotions = ({cart, handlePromotion}) => {
 			<CardContent>
 			<Typography variant="h5" gutterBottom>5%OFF, can be used in conjunction with other codes</Typography>
 			</CardContent>
-			{ flag===false && (
+			{ (!promotion.length || (promotion[0]!="20off")) && (
 			<CardActions className={classes.cardActions}>
-				{ !flag2 ?
+				{ (!promotion.length || (promotion.length==1 && promotion[0]!="5off")) ?
 				(<IconButton aria-label="Add to Cart" color="primary" onClick={()=>{setProm2()}}>
 					 add 5%OFF code
 				</IconButton>):
@@ -111,9 +101,9 @@ const Promotions = ({cart, handlePromotion}) => {
 			<CardContent>
 			<Typography variant="h5" gutterBottom>20eur OFF, can be used in conjunction with other codes</Typography>
 			</CardContent>
-			{ flag===false && (
+			{ (!promotion.length || promotion[0]!="20off") && (
 			<CardActions className={classes.cardActions}>
-				{ !flag3 ?
+				{ (!promotion.length || (promotion.length==1 && promotion[0]!="20euroff")) ?
 				(<IconButton aria-label="Add to Cart" color="primary" onClick={()=>{setProm3()}}>
 					 add 20eur off code
 				</IconButton>):
