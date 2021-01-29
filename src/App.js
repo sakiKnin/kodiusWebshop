@@ -44,9 +44,6 @@ const App = () => {
 	}
 
 	const handlePromotion = (prom) => {
-
-		console.log("seted promotion:", prom)
-		console.log(prom.length)
 		setPromotion(prom)
 	}
 
@@ -68,7 +65,7 @@ const App = () => {
 						<Products products={products} onAddToCart={handleAddToCart} />
 					</Route>
 					<Route path="/checkout" exact>
-						<Checkout cart={cart} promotion={promotion}/>
+						<Checkout cart={cart} promotion={promotion} handlePromotion={handlePromotion}/>
 					</Route>
 					<Route exact="/cart">
 						<Cart 

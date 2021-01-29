@@ -15,6 +15,7 @@ const AddressForm = ({ checkoutToken, next }) => {
 	const [shippingOptions, setShippingOptions] = useState([])
 	const [shippingOption, setShippingOption] = useState('')
 	const methods = useForm()
+	
 
 	const countries = Object.entries(shippingCountries).map(([code, name])=>({id:code, label:name}))
 	const subdivisions = Object.entries(shippingSubdivisions).map(([code, name])=>({id:code, label:name}))
@@ -49,6 +50,8 @@ const AddressForm = ({ checkoutToken, next }) => {
 	useEffect(() => {
 		if(shippingSubdivision) fetchShippingOptions(checkoutToken.id, shippingCountry, shippingSubdivision)
 	}, [shippingSubdivision])
+
+	
 
 	return(
 		<div>

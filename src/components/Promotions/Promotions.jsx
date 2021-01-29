@@ -21,30 +21,30 @@ const Promotions = ({cart, handlePromotion, promotion}) => {
 
 	const setProm2 = () => {
 		
-		if(promotion.length) promotion=["20euroff", "5off"]
+		if(promotion.length) promotion=["20eur", "5off"]
 		else promotion=["5off"]
 		handlePromotion(promotion)
 
 	}
 
 	const removeProm2 = () => {
-		if(promotion.length==2){ 
+		if(promotion.length===2){ 
 			promotion=[]
-			promotion[0]="20euroff"
+			promotion[0]="20eur"
 		}else promotion=[]
 		handlePromotion(promotion)
 
 	}
 
 	const setProm3 = () => {
-		if(promotion.length) promotion=["5off","20euroff"]
-		else promotion=["20euroff"]
+		if(promotion.length) promotion=["5off","20eur"]
+		else promotion=["20eur"]
 		handlePromotion(promotion)
 
 	}
 
 	const removeProm3 = () => {
-		if(promotion.length==2){
+		if(promotion.length===2){
 			promotion=[]
 			promotion[0]="5off"
 		}else promotion=[]
@@ -103,7 +103,7 @@ const Promotions = ({cart, handlePromotion, promotion}) => {
 			</CardContent>
 			{ (!promotion.length || promotion[0]!="20off") && (
 			<CardActions className={classes.cardActions}>
-				{ (!promotion.length || (promotion.length==1 && promotion[0]!="20euroff")) ?
+				{ (!promotion.length || (promotion.length==1 && promotion[0]!="20eur")) ?
 				(<IconButton aria-label="Add to Cart" color="primary" onClick={()=>{setProm3()}}>
 					 add 20eur off code
 				</IconButton>):

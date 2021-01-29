@@ -9,15 +9,14 @@ import PaymentForm from '../PaymentForm'
 
 const steps = ['Shipping address', 'Payment details' ]
 
-const Checkout = ({ cart, promotion }) => {
+const Checkout = ({ cart, promotion, handlePromotion }) => {
 	const [activeStep, setActiveStep] = useState(0)
 	const [checkoutToken, setCheckoutToken] = useState(null)
 	const [shippingData, setShippingData] = useState({})
-	const [res, setRes]=useState({})
+	const [res, setRes]=useState(null)
 	const classes = useStyles();
 
-	useEffect(()=>{
-		const generateToken = async () => {
+	const generateToken = async () => {
 			try{
 				const token = await commerce.checkout.generateToken(cart.id, {type: 'cart'})
 				setCheckoutToken(token)
@@ -25,32 +24,33 @@ const Checkout = ({ cart, promotion }) => {
 				
 				}
 			}
-			generateToken()
-		}, [cart])
 
-	 
-
-	let retrieve = async () => {
-			let retrieveToken = await commerce.checkout.getToken(checkoutToken.id)
-			setCheckoutToken(retrieveToken)
-
+	const discount = async (promCode) => {
+			try{
+				const response = await commerce.checkout.checkDiscount(checkoutToken.id, {code: promCode})
+				setRes(response)
+				handlePromotion([])
+			}catch(error){
+				 
+				}
 			}
-		 
 
-	let discount = async (discountCode) => {
-			console.log(discountCode)
-			const response = await commerce.checkout.checkDiscount(checkoutToken.id, {code: discountCode})
-			setRes(response)
+	const retrieve = async () => {
+			try{
+				const retrieveToken = await commerce.checkout.getToken(checkoutToken.id)
+				setCheckoutToken(retrieveToken)
+				setRes(null)
+			}catch(error){
+			
 			}
+		}
 	 
 	const nextStep = () => setActiveStep((prevActiveStep) => prevActiveStep + 1)
 	const backStep = () => setActiveStep((prevActiveStep) => prevActiveStep - 1)
 
 	const next = (data) => {
 		setShippingData(data)
-		if(promotion==="20off") discount(promotion)
-		 
-		let x=false
+		{/*let x=false
 		let y=false		
 		for(let item of checkoutToken.live.line_items){
 			if (item.name==="Motion Sensor" && item.quantity==3) x=true
@@ -59,14 +59,10 @@ const Checkout = ({ cart, promotion }) => {
 		 
 		if(x && !y) discount("motiondiscount")
 		else if(!x && y) discount("smokediscount")
-		else if(x && y) discount("motionsmokediscount")
+		else if(x && y) discount("motionsmokediscount")*/}
 		 
-		if(res){
-			retrieve() 
-			nextStep()
-		}
-		
-		
+		nextStep()
+		 
 	}
 
 	const Confirmation = () => (
@@ -76,8 +72,21 @@ const Checkout = ({ cart, promotion }) => {
 	)
 	
 	const Form = () => (activeStep === 0 
-		? <AddressForm checkoutToken={checkoutToken} next={next}/> 
-		: <PaymentForm shippingData={shippingData} checkoutToken={checkoutToken} backStep={backStep}/>)
+		? <AddressForm checkoutToken={checkoutToken} next={next} /> 
+		: <PaymentForm shippingData={shippingData} checkoutToken={checkoutToken} backStep={backStep} />)
+
+	useEffect(()=>{
+			generateToken()
+		}, [cart])
+	
+	useEffect(()=>{
+		if(promotion.length && checkoutToken) discount(promotion[0])
+	},[checkoutToken])
+	
+	useEffect(()=>{
+		if(res) retrieve()
+	},[res])
+	 
 	
 	return(
 		<>
